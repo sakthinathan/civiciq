@@ -41,16 +41,16 @@ jobs:
         run: |
           python -c "from app import create_app; app = create_app(); print('App created successfully')"
 
-      - name: Run safe tests (excluding stale imports)
+      - name: Run full test suite
         env:
           GEMINI_API_KEY: test_key_placeholder
           RATELIMIT_STORAGE_URI: memory://
           TESTING: "true"
           FLASK_ENV: testing
         run: |
-          python -m pytest tests/test_security.py tests/test_accessibility.py tests/test_data.py -v --tb=short
+          python3 -m pytest tests/ -v --tb=short --ignore=tests/test_services.py
 
       - name: Check code style
         run: |
           pip install pyflakes
-          python -m pyflakes routes/ services/ config.py app.py || true
+          python3 -m pyflakes routes/ services/ config.py app.py || true

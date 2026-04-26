@@ -1,5 +1,5 @@
 """
-ElectIQ Test Suite - Security & Sanitization Tests
+CivicIQ Test Suite - Security & Sanitization Tests
 Tests XSS prevention, injection attempts, rate limiting, and security headers
 """
 

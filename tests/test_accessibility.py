@@ -1,5 +1,5 @@
 """
-ElectIQ Test Suite - Accessibility & Data Integrity Tests
+CivicIQ Test Suite - Accessibility & Data Integrity Tests
 Tests ARIA, keyboard navigation, color contrast, and data structure validation
 """
 

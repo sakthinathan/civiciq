@@ -150,7 +150,7 @@ class GeminiService:
             )
 
         return (
-            "I'm ElectIQ, your election education guide! Ask me about voting systems, timelines, "
+            "I'm CivicIQ, your election education guide! Ask me about voting systems, timelines, "
             "or the election process in India, USA, UK, EU, Brazil, and more. 🗳️"
         )
 
@@ -161,6 +161,44 @@ class GeminiService:
     def get_call_count(self) -> int:
         """Get the number of API calls made."""
         return self.call_count
+
+    def generate_quiz(self, country_name: str) -> list[dict]:
+        """
+        Generate a dynamic 3-question quiz for a specific country in JSON format.
+        """
+        if not self.available or not self.model:
+            return [] # fallback will be handled by frontend or route
+
+        try:
+            self.call_count += 1
+            prompt = (
+                f"Generate exactly 3 multiple-choice election trivia questions about {country_name}. "
+                "Return the response STRICTLY as a raw JSON array, with no markdown formatting or backticks. "
+                "Each object must have exactly these keys: 'q' (the question string), 'options' (an array of exactly 4 strings), "
+                "and 'answer' (integer 0-3 indicating the index of the correct option)."
+            )
+
+            response = self.model.generate_content(
+                prompt,
+                generation_config=genai.types.GenerationConfig(
+                    temperature=0.7,
+                    max_output_tokens=1024,
+                ),
+            )
+
+            if response and response.text:
+                import json
+                text = response.text.strip()
+                # Clean up if Gemini adds markdown blocks
+                if text.startswith("```json"): text = text[7:]
+                if text.startswith("```"): text = text[3:]
+                if text.endswith("```"): text = text[:-3]
+                
+                return json.loads(text.strip())
+            return []
+        except Exception as e:
+            logger.error(f"Gemini Quiz Generation error: {e}")
+            return []
 
 
 # Singleton instance

@@ -1,5 +1,5 @@
 """
-ElectIQ Test Suite - Data Integrity Tests
+CivicIQ Test Suite - Data Integrity Tests
 Comprehensive validation of all data structures and content
 """
 

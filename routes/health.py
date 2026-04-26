@@ -21,7 +21,7 @@ def health_check() -> tuple[dict, int]:
     """
     return jsonify({
         "status": "ok",
-        "service": "ElectIQ",
+        "service": "CivicIQ",
         "version": "1.0.0",
         "component": "api-server",
     }), 200

@@ -193,3 +193,29 @@ def get_chat_history(session_id: str) -> tuple[dict, int]:
     except Exception as e:
         logger.error(f"Error retrieving chat history: {e}")
         return jsonify({"error": "Failed to retrieve chat history"}), 500
+
+
+@chat_bp.route("/api/quiz/generate", methods=["POST"])
+@limiter.limit(f"{CHAT_REQUESTS_PER_MINUTE}/minute")
+def generate_quiz() -> tuple[dict, int]:
+    """
+    Generate a dynamic quiz using Gemini.
+    Returns: JSON array of 3 questions
+    """
+    try:
+        if not request.is_json:
+            return jsonify({"error": "Content-Type must be application/json"}), 400
+
+        data = request.get_json(force=True)
+        country = data.get("country", "").strip()
+
+        if not country:
+            return jsonify({"error": "Country is required"}), 400
+
+        gemini_service = get_gemini_service()
+        quiz_data = gemini_service.generate_quiz(country)
+        
+        return jsonify({"questions": quiz_data}), 200
+    except Exception as e:
+        logger.error(f"Quiz generation route error: {e}")
+        return jsonify({"error": "An error occurred"}), 500

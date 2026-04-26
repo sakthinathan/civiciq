@@ -1,5 +1,5 @@
 """
-ElectIQ Test Suite - Routes Integration Tests
+CivicIQ Test Suite - Routes Integration Tests
 Tests all API endpoints, response formats, and error handling
 """
 
@@ -40,10 +40,10 @@ class TestHealthRoute:
         assert "version" in data
 
     def test_health_service_name(self, client):
-        """Service name should be ElectIQ."""
+        """Service name should be CivicIQ."""
         res = client.get("/health")
         data = json.loads(res.data)
-        assert data["service"] == "ElectIQ"
+        assert data["service"] == "CivicIQ"
 
 
 class TestElectionsRoute:
@@ -297,7 +297,7 @@ class TestFallbackResponse:
         """Unknown topic should return default message."""
         resp = fallback_response("Tell me about pizza")
         assert len(resp) > 20
-        assert "ElectIQ" in resp or "election" in resp.lower()
+        assert "CivicIQ" in resp or "election" in resp.lower()
 
     def test_empty_message(self):
         """Empty message should still return something."""

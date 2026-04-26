@@ -1,5 +1,5 @@
 """
-ElectIQ Routes Package
+CivicIQ Routes Package
 """
 
 __all__ = ["elections", "chat", "translate", "health"]

@@ -1,143 +1,56 @@
-﻿# ElectIQ - Global Election Education Platform
+# CivicIQ - Global Election Education Platform
 
-Making democracy understandable with interactive timelines, voting guides, and AI-powered Q&A.
+CivicIQ is a transparent, data-driven educational platform built to make global democracy understandable. It demystifies the chaotic worldwide electoral landscape using interactive timelines, dynamic voting guides, and a highly contextual AI-powered Google Gemini assistant.
 
-## Project Overview
+## 🎯 Our Chosen Vertical
 
-ElectIQ is a production-grade educational platform featuring:
-- 5 countries: India, USA, UK, EU, Brazil
-- Interactive election timelines
-- Step-by-step voting guides
-- Election system comparison view
-- Country quiz mode
-- AI chat powered by Google Gemini
-- Translation support powered by Google Cloud Translate
-- Accessibility-first frontend design
-- Cloud Run deployment with CI/CD
+**Civic Education & Global Literacy**
 
-## Tech Stack
+In a world where international politics heavily influence local realities, the average citizen struggles to understand how foreign governments legally operate. Is the UK a republic? How does the Electoral College work? What is the EU Parliament?
 
-- Backend: Flask 3.1.0 (Python 3.11+)
-- AI: Google Gemini 1.5 Flash
-- Translation: Google Cloud Translate v2
-- Storage: Firebase Admin / Firestore
-- Grounding: Vertex AI (service wiring included)
-- Deployment: Google Cloud Run
-- Testing: pytest
+CivicIQ solves this directly by consolidating, standardizing, and educating users on the democratic processes characterizing five of the world's most globally influential electoral systems.
 
-## Project Structure
+## 🧠 Approach and Logic
 
-```text
-electiq-ai/
-  app.py
-  config.py
-  requirements.txt
-  Dockerfile
-  cloudbuild.yaml
-  data/
-    elections.json
-    glossary.json
-  routes/
-    health.py
-    elections.py
-    chat.py
-    translate.py
-  services/
-    gemini_service.py
-    translate_service.py
-    firebase_service.py
-    vertex_service.py
-  templates/
-    index.html
-  static/
-    css/style.css
-    js/app.js
-    js/chat.js
-    js/timeline.js
-    js/translate.js
-  tests/
-    test_routes.py
-    test_services.py
-    test_security.py
-    test_accessibility.py
-    test_data.py
-```
+We built CivicIQ prioritizing **empathy, accessibility, and architectural efficiency**:
+- **Empathy:** Information regarding state legislature is stereotypically extremely dense. We approached this by building a highly visual, SPA (Single Page Application) frontend. We replaced massive textbook walls of text with interactive timelines, bold infographics, and a live "Compare" system.
+- **Accessibility:** Instead of treating "Access" as a checklist, we natively built in ARIA labels, skip-links, and most importantly, a Google Text-to-Speech (gTTS) implementation. AI Assistant interactions aren't just readable; they are globally audible at the click of a button.
+- **Context Handling:** Our logic strictly connects our AI integrations to user behaviors. Rather than slapping a generic chatbot sidebar on the app, the CivicIQ Assistant actively logs what country screen you are browsing, injecting logical "System Prompts" over the connection to provide hyper-focused answers without forcing the user to repeat themselves.
 
-## API Endpoints
+## ⚙️ How the Solution Works
 
-- GET /health
-- GET /api/elections
-- GET /api/elections/<country_id>
-- GET /api/elections/<country_id>/timeline
-- GET /api/elections/<country_id>/voting-steps
-- GET /api/glossary
-- GET /api/glossary/<term>
-- POST /api/chat
-- POST /api/chat/grounded
-- GET /api/chat/history/<session_id>
-- POST /api/translate
-- POST /api/translate/detect
-- GET /api/languages
+CivicIQ is a heavily decoupled **Flask/Python Monolith** architecture routing into a dynamic vanilla HTML/JS frontend overlay.
 
-## Security
+1. **The Navigation Layer:** Users shift between "Explore", "Compare", "Quiz", and "AI Chat" views entirely client-side. The DOM renders dynamically to prevent heavy page reloads, maximizing bandwidth efficiency.
+2. **The API Layer:** When heavy actions are needed, the JS frontend uses asynchronous `fetch` requests pinging Flask `routes/` (e.g., `/api/elections`, `/api/chat`, `/api/tts`, `/api/quiz/generate`).
+3. **The ML Layer (Google Ecosystem):** 
+   - When users query the assistant, `gemini_service.py` pings **Google Gemini 1.5 Flash** for high-speed, grounded LLM analysis. Let's say you ask about Brazilian election cycles—Gemini receives your implicit viewing context and securely generates the output.
+   - When a user starts a Quiz, the backend generates dynamic trivia on-the-fly directly from Gemini returning strict serialized JSON components. 
+4. **The Security Layer:** Every backend request passes through a `Flask-Limiter` proxy. All user chat data is strictly cleansed of malicious HTML via Python's `bleach` module. Outbound data payloads organically compress under `Flask-Compress`, while the HTML securely enforces an explicit `Content-Security-Policy`.
 
-- Input sanitization with bleach
-- Rate limiting with Flask-Limiter
-- Security headers including CSP, X-Frame-Options, and X-Content-Type-Options
-- Configurable limiter backend via RATELIMIT_STORAGE_URI
-  - Local default: memory://
-  - Production recommendation: Redis URI
+## 🤔 Assumptions Made
 
-## Accessibility
+During the development and architectural planning of CivicIQ, several calculated decisions/assumptions were structured:
+1. **Fallback Supremacy over ML Fidelity:** We assume that API credentials may sometimes rotate, fail, or be exhausted. Therefore, the core services (like generating quizzes or chat answers) have hard-coded dynamic fallback variables. If Gemini completely crashes, the app will instantly flip to local JSON backups, intentionally choosing to keep the user engaged instead of throwing 500 server errors.
+2. **Text-To-Speech Lightweight Tooling:** We assumed executing a native API integration via the basic `gTTS` library was highly preferable over an enterprise-authenticated GCP Speech-to-Text authorization key, to maximize ease-of-deployment for open-source evaluators.
+3. **Monolith vs Microservices:** To keep the footprint simple for rapid hackathon testing and deployment locally via `python3 app.py`, we assumed a modular Flask app architecture (separating `/routes` and `/services`) offered all of the scaling benefits of Microservices while retaining the sanity and singular deployment layer of a Monolith (`cloudbuild.yaml`).
 
-- ARIA landmarks and semantic structure
-- Keyboard-friendly interaction patterns
-- Visible focus states
-- Skip link support
-- High contrast editorial theme
+## 💻 Tech Stack & Features
+- **Backend**: Flask 3.1.0, Flask-Compress, Flask-Limiter
+- **AI Integrations**: Google Gemini 1.5 Flash (Dynamic Quiz + Context Chat)
+- **Speech Synthesis**: gTTS (Google Translate API)
+- **Deployment**: Google Cloud Run Ready
+- **Testing**: Native Pytest wrappers (`tests/`)
 
-## Testing
-
-Run all tests:
+## 🚀 Local Setup
 
 ```bash
-pytest tests/ -v
+# 1. Install dependencies
+python3 -m pip install -r requirements.txt
+
+# 2. Run the secure Flask server 
+python3 app.py
+
+# 3. Access locally
+Open your browser to http://localhost:5000
 ```
-
-Current status:
-- 299 tests passing
-
-## Deployment
-
-Deployed Cloud Run service URL:
-- https://electiq-ai-253750832620.us-central1.run.app
-
-Health endpoint:
-- https://electiq-ai-253750832620.us-central1.run.app/health
-
-Deploy command:
-
-```bash
-gcloud run deploy electiq-ai \
-  --source . \
-  --region us-central1 \
-  --platform managed \
-  --allow-unauthenticated
-```
-
-## Local Setup
-
-```bash
-pip install -r requirements.txt
-python app.py
-```
-
-## Environment Variables
-
-- GEMINI_API_KEY
-- GOOGLE_CLOUD_PROJECT
-- GOOGLE_TRANSLATE_ENABLED
-- FIREBASE_ENABLED
-- FIREBASE_CREDENTIALS_PATH
-- VERTEX_GROUNDING_ENABLED
-- RATELIMIT_STORAGE_URI

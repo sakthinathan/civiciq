@@ -1,5 +1,5 @@
 """
-ElectIQ Configuration
+CivicIQ Configuration
 All environment variables, constants, and settings
 """
 
@@ -10,7 +10,7 @@ from typing import Optional
 # FLASK CONFIG
 # ──────────────────────────────────────────────
 
-SECRET_KEY: str = os.environ.get("SECRET_KEY", "electiq-dev-key-2026-change-in-production")
+SECRET_KEY: str = os.environ.get("SECRET_KEY", "civiciq-dev-key-2026-change-in-production")
 DEBUG: bool = os.environ.get("DEBUG", "false").lower() == "true"
 TESTING: bool = os.environ.get("TESTING", "false").lower() == "true"
 PORT: int = int(os.environ.get("PORT", 8080))
@@ -24,7 +24,7 @@ GEMINI_API_KEY: Optional[str] = os.environ.get("GEMINI_API_KEY")
 GEMINI_MODEL: str = "gemini-1.5-flash"
 
 # System prompt for Gemini AI
-SYSTEM_PROMPT: str = """You are ElectIQ, a friendly and knowledgeable election education assistant. You help people understand electoral systems, voting processes, timelines, and democratic participation worldwide.
+SYSTEM_PROMPT: str = """You are CivicIQ, a friendly and knowledgeable election education assistant. You help people understand electoral systems, voting processes, timelines, and democratic participation worldwide.
 
 You have deep knowledge about elections in India, the USA, UK, EU, Brazil, and other countries.
 
@@ -76,7 +76,7 @@ ALLOWED_ORIGINS: list[str] = [
     "http://localhost:8080",
     "http://localhost:5000",
     "http://127.0.0.1:8080",
-    "https://electiq-ai.example.com"  # Update with actual Cloud Run URL
+    "https://civiciq-ai.example.com"  # Update with actual Cloud Run URL
 ]
 
 CORS_HEADERS: dict[str, str] = {

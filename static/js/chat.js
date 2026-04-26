@@ -27,7 +27,18 @@ async function sendChat() {
   const sendBtn = document.getElementById("chatSend");
   if (sendBtn) sendBtn.disabled = true;
 
-  window.electiqState.chatHistory.push({ role: "user", content: msg });
+  window.civiciqState.chatHistory.push({ role: "user", content: msg });
+
+  // Inject invisible context if the user navigated from a specific country
+  let historyPayload = [...window.civiciqState.chatHistory];
+  const contextCountry = window.civiciqState.currentCountry;
+  if (contextCountry) {
+    const countryName = window.civiciqState.allCountries?.[contextCountry]?.name || contextCountry;
+    historyPayload.unshift({
+      role: "user",
+      content: `System Context: I am currently reading the election process for ${countryName}. Please logically frame your answers around this context unless I specify another country.`
+    });
+  }
 
   try {
     const res = await fetch("/api/chat", {
@@ -35,14 +46,15 @@ async function sendChat() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         message: msg,
-        history: window.electiqState.chatHistory.slice(-8)
+        history: historyPayload.slice(-8),
+        country: contextCountry
       })
     });
 
     const data = await res.json();
     typingEl.remove();
     const reply = data.response || "I could not process that. Please try again.";
-    window.electiqState.chatHistory.push({ role: "assistant", content: reply });
+    window.civiciqState.chatHistory.push({ role: "assistant", content: reply });
     appendChatMsg("assistant", reply);
   } catch (e) {
     typingEl.remove();
@@ -71,9 +83,19 @@ function appendChatMsg(role, text) {
   div.setAttribute("aria-label", `${role === "user" ? "You" : "Assistant"}: ${text}`);
 
   const avatar = role === "user" ? "👤" : "🗳️";
+  
+  let ttsButton = "";
+  if (role === "assistant" && text.indexOf("typing-indicator") === -1) {
+    const rawText = encodeURIComponent(text);
+    ttsButton = `<button class="tts-btn" onclick="playAudio(this, decodeURIComponent('${rawText}'))" title="Listen Audio" aria-label="Play audio response">🔊 Listen</button>`;
+  }
+
   div.innerHTML = `
     <div class="msg-avatar" aria-hidden="true">${avatar}</div>
-    <div class="msg-bubble">${formatChatText(text)}</div>`;
+    <div class="msg-bubble">
+      ${formatChatText(text)}
+      ${ttsButton}
+    </div>`;
 
   win.appendChild(div);
   win.scrollTop = win.scrollHeight;
@@ -109,6 +131,40 @@ function formatChatText(text) {
     .replace(/^/, "<p>").replace(/$/, "</p>");
 }
 
+async function playAudio(btn, text) {
+  if (btn.classList.contains('playing')) return;
+  const originalText = btn.innerHTML;
+  btn.innerHTML = "⏳ Loading...";
+  btn.classList.add("playing");
+  
+  try {
+    const res = await fetch("/api/tts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text })
+    });
+    
+    if (!res.ok) throw new Error("Audio error");
+    
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    
+    btn.innerHTML = "🔊 Playing...";
+    
+    audio.onended = () => {
+      btn.innerHTML = originalText;
+      btn.classList.remove("playing");
+    };
+    
+    await audio.play();
+  } catch (e) {
+    btn.innerHTML = "❌ Error";
+    setTimeout(() => { btn.innerHTML = originalText; btn.classList.remove("playing"); }, 2000);
+  }
+}
+
 window.initChatInput = initChatInput;
 window.sendChat = sendChat;
 window.sendSuggestion = sendSuggestion;
+window.playAudio = playAudio;

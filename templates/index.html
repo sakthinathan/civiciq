@@ -3,255 +3,271 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ElectIQ — Global Election Education</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://i.ytimg.com; connect-src 'self' https://generativelanguage.googleapis.com; frame-src 'self' https://www.youtube.com;" />
+  <title>CivicIQ — Global Election Education</title>
   <meta name="description" content="Understand elections worldwide. Interactive timelines, step-by-step guides, and AI-powered Q&A for global election processes." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Playfair+Display:ital,wght@0,700..900;1,700..900&display=swap" rel="stylesheet" />
+  <script>
+    // Global helper for HTML escaping
+    window.escapeHtml = (unsafe) => {
+      return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    };
+  </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
+
 <body>
+  <a href="#main-content" class="skip-link">Skip to main content</a>
 
-<!-- ══════ HEADER ══════ -->
-<header class="site-header" role="banner">
-  <div class="header-inner">
-    <div class="logo" aria-label="ElectIQ Home">
-      <span class="logo-icon" aria-hidden="true">🗳️</span>
-      <span class="logo-text">Elect<em>IQ</em></span>
-    </div>
-    <nav class="main-nav" role="navigation" aria-label="Main navigation">
-      <button class="nav-btn active" data-view="explore" aria-current="page">Explore</button>
-      <button class="nav-btn" data-view="compare">Compare</button>
-      <button class="nav-btn" data-view="quiz">Quiz</button>
-      <button class="nav-btn" data-view="chat">AI Chat</button>
-    </nav>
-    <div class="header-actions">
-      <button class="translate-btn" id="translateToggle" aria-label="Toggle language translation" title="Translate page">
-        <span aria-hidden="true">🌐</span> Translate
-      </button>
-      <div class="lang-picker hidden" id="langPicker" role="listbox" aria-label="Select language">
-        <button role="option" data-lang="hi">हिन्दी</button>
-        <button role="option" data-lang="ta">தமிழ்</button>
-        <button role="option" data-lang="es">Español</button>
-        <button role="option" data-lang="fr">Français</button>
-        <button role="option" data-lang="de">Deutsch</button>
-        <button role="option" data-lang="pt">Português</button>
-        <button role="option" data-lang="en">English</button>
+  <!-- ══════ HEADER ══════ -->
+  <header class="site-header" role="banner">
+    <div class="header-inner">
+      <div class="logo" onclick="setView('explore')" style="cursor:pointer;" aria-label="Home">
+        <span class="logo-icon" aria-hidden="true">🗳️</span>
+        <span>Civic<em>IQ</em></span>
       </div>
-    </div>
-  </div>
-</header>
+      
+      <nav class="main-nav" role="navigation" aria-label="Main Navigation">
+        <button class="nav-btn active" data-view="explore" onclick="setView('explore')" role="link">Global Explorer</button>
+        <button class="nav-btn" data-view="compare" onclick="setView('compare')" role="link">System Compare</button>
+        <button class="nav-btn" data-view="quiz" onclick="setView('quiz')" role="link">Trivia Quest</button>
+        <button class="nav-btn" data-view="chat" onclick="setView('chat')" role="link">Civic Assistant</button>
+      </nav>
 
-<!-- ══════ HERO ══════ -->
-<section class="hero" aria-labelledby="hero-title">
-  <div class="hero-bg" aria-hidden="true">
-    <div class="globe-ring ring-1"></div>
-    <div class="globe-ring ring-2"></div>
-    <div class="globe-ring ring-3"></div>
-    <div class="floating-flags" aria-hidden="true">
-      <span class="ff">🇮🇳</span><span class="ff">🇺🇸</span><span class="ff">🇬🇧</span>
-      <span class="ff">🇧🇷</span><span class="ff">🇪🇺</span>
-    </div>
-  </div>
-  <div class="hero-content">
-    <div class="hero-badge">🌍 5 Countries · 25+ Election Facts</div>
-    <h1 id="hero-title">Understand How<br /><em>Democracy Works</em></h1>
-    <p class="hero-sub">Interactive timelines, step-by-step guides, and AI-powered Q&amp;A — explore elections from India to the EU.</p>
-    <div class="hero-ctas">
-      <button class="btn-primary" onclick="setView('explore')" aria-label="Start exploring countries">Start Exploring</button>
-      <button class="btn-ghost" onclick="setView('chat')" aria-label="Ask the AI assistant">Ask AI Assistant</button>
-    </div>
-    <div class="hero-stats" role="list" aria-label="Key statistics">
-      <div class="stat" role="listitem"><span class="stat-num">970M+</span><span class="stat-label">Indian Voters</span></div>
-      <div class="stat" role="listitem"><span class="stat-num">720</span><span class="stat-label">EU Parliament Seats</span></div>
-      <div class="stat" role="listitem"><span class="stat-num">156M+</span><span class="stat-label">Brazilian Voters</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════ MAIN CONTENT ══════ -->
-<main id="main-content" role="main">
-
-  <!-- ── VIEW: EXPLORE ── -->
-  <section id="view-explore" class="view active" aria-label="Explore countries">
-    <div class="section-header">
-      <h2>Explore by Country</h2>
-      <p>Select a country to see its full election process, timeline, and voting steps.</p>
-    </div>
-    <div class="country-grid" role="list" aria-label="Country selection">
-      {% for key, country in countries.items() %}
-      <button class="country-card" role="listitem" data-country="{{ key }}"
-              aria-label="Explore {{ country.name }} elections"
-              style="--accent: {{ country.color }}">
-        <span class="cc-flag" aria-hidden="true">{{ country.flag }}</span>
-        <span class="cc-name">{{ country.name }}</span>
-        <span class="cc-system">{{ country.system }}</span>
-        <span class="cc-arrow" aria-hidden="true">→</span>
-      </button>
-      {% endfor %}
-    </div>
-
-    <!-- Country Detail Panel -->
-    <div id="countryDetail" class="country-detail hidden" aria-live="polite" aria-label="Country election details">
-      <button class="back-btn" onclick="closeCountry()" aria-label="Back to country list">← Back</button>
-      <div class="detail-header">
-        <span class="detail-flag" id="detailFlag" aria-hidden="true"></span>
-        <div>
-          <h2 id="detailName"></h2>
-          <div class="detail-meta">
-            <span id="detailSystem"></span> ·
-            <span id="detailBody"></span> ·
-            <span id="detailFreq"></span>
+      <div class="header-actions">
+        <!-- Translator -->
+        <div class="translate-wrap">
+          <button class="translate-btn" id="translateToggle" aria-haspopup="listbox" aria-expanded="false">
+            <span aria-hidden="true">🌐</span> Translate
+          </button>
+          <div class="lang-picker hidden" id="langPicker" role="listbox" aria-label="Select language">
+            <button role="option" data-lang="hi">हिन्दी</button>
+            <button role="option" data-lang="ta">தமிழ்</button>
+            <button role="option" data-lang="es">Español</button>
+            <button role="option" data-lang="fr">Français</button>
+            <button role="option" data-lang="de">Deutsch</button>
+            <button role="option" data-lang="pt">Português</button>
+            <button role="option" data-lang="en">English</button>
           </div>
         </div>
       </div>
-      <p id="detailDesc" class="detail-desc"></p>
+    </div>
+  </header>
 
-      <!-- Facts strip -->
-      <div id="detailFacts" class="facts-strip" role="list" aria-label="Key facts"></div>
-
-      <!-- Tabs -->
-      <div class="detail-tabs" role="tablist" aria-label="Detail sections">
-        <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-timeline" data-tab="timeline">📅 Timeline</button>
-        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-steps" data-tab="steps">📋 How to Vote</button>
-      </div>
-
-      <!-- Timeline Tab -->
-      <div id="tab-timeline" class="tab-content active" role="tabpanel" aria-label="Election timeline">
-        <div id="timelineContainer" class="timeline"></div>
-      </div>
-
-      <!-- Steps Tab -->
-      <div id="tab-steps" class="tab-content" role="tabpanel" aria-label="Voting steps" hidden>
-        <div id="stepsContainer" class="steps-grid"></div>
-      </div>
-
-      <div class="detail-actions">
-        <button class="btn-outline" onclick="openQuizForCurrent()" aria-label="Take quiz for this country">🧠 Take Quiz</button>
-        <button class="btn-outline" onclick="setView('chat')" aria-label="Ask AI about this country">🤖 Ask AI</button>
+  <!-- ══════ HERO ══════ -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-bg" aria-hidden="true">
+      <div class="globe-ring ring-1"></div>
+      <div class="globe-ring ring-2"></div>
+      <div class="globe-ring ring-3"></div>
+      <div class="floating-flags" aria-hidden="true">
+        <span class="ff">🇮🇳</span><span class="ff">🇺🇸</span><span class="ff">🇬🇧</span>
+        <span class="ff">🇧🇷</span><span class="ff">🇪🇺</span>
       </div>
     </div>
-  </section>
-
-  <!-- ── VIEW: COMPARE ── -->
-  <section id="view-compare" class="view hidden" aria-label="Compare election systems">
-    <div class="section-header">
-      <h2>Compare Election Systems</h2>
-      <p>Side-by-side comparison of electoral systems worldwide.</p>
-    </div>
-    <div class="compare-table-wrap">
-      <table class="compare-table" role="table" aria-label="Election systems comparison">
-        <caption class="sr-only">Comparison of election systems across countries</caption>
-        <thead>
-          <tr>
-            <th scope="col">Country</th>
-            <th scope="col">System</th>
-            <th scope="col">Frequency</th>
-            <th scope="col">Eligible Voters</th>
-            <th scope="col">Governing Body</th>
-            <th scope="col">Compulsory?</th>
-          </tr>
-        </thead>
-        <tbody id="compareBody">
-          <!-- Filled by JS -->
-        </tbody>
-      </table>
-    </div>
-    <div class="compare-charts">
-      <div class="chart-card" aria-label="Voter count comparison">
-        <h3>Registered Voters</h3>
-        <div class="bar-chart" id="voterChart" role="img" aria-label="Bar chart of registered voters by country"></div>
+    <div class="hero-content">
+      <div class="hero-badge">🌍 5 Countries · Dynamic Data Structuring</div>
+      <h1 id="hero-title">Discover the Mechanisms of<br /><em>Global Democracy</em></h1>
+      <p class="hero-sub" style="max-width: 650px; margin: 15px auto;">Step behind the scenes and explore exactly how international legislative structures and electoral functions legally operate. Uncover interactive political timelines, compare disparate global voting metrics, and deeply interrogate our context-aware AI assistant on anything you want to understand.</p>
+      <div class="hero-ctas">
+        <button class="btn-primary" onclick="setView('explore')" aria-label="Start exploring countries">Start Exploring</button>
+        <button class="btn-ghost" onclick="setView('chat')" aria-label="Ask the AI assistant">Ask AI Assistant</button>
       </div>
-      <div class="chart-card" aria-label="Election frequency comparison">
-        <h3>Election Cycle (Years)</h3>
-        <div class="bar-chart" id="cycleChart" role="img" aria-label="Bar chart of election cycles by country"></div>
+      <div class="hero-stats" role="list" aria-label="Key statistics">
+        <div class="stat" role="listitem"><span class="stat-num">970M+</span><span class="stat-label">Indian Voters</span></div>
+        <div class="stat" role="listitem"><span class="stat-num">720</span><span class="stat-label">EU Parliament Seats</span></div>
+        <div class="stat" role="listitem"><span class="stat-num">156M+</span><span class="stat-label">Brazilian Voters</span></div>
       </div>
     </div>
   </section>
 
-  <!-- ── VIEW: QUIZ ── -->
-  <section id="view-quiz" class="view hidden" aria-label="Election knowledge quiz">
-    <div class="section-header">
-      <h2>Test Your Knowledge</h2>
-      <p>Pick a country and see how much you know about its election process.</p>
-    </div>
-    <div id="quizCountryPicker" class="quiz-picker" role="list" aria-label="Pick a country for quiz">
-      {% for key, country in countries.items() %}
-      <button class="quiz-country-btn" role="listitem" data-country="{{ key }}"
-              aria-label="Quiz about {{ country.name }}">
-        {{ country.flag }} {{ country.name }}
-      </button>
-      {% endfor %}
-    </div>
-    <div id="quizContainer" class="quiz-container hidden" aria-live="polite"></div>
-  </section>
+  <!-- ══════ MAIN CONTENT ══════ -->
+  <main id="main-content" role="main">
 
-  <!-- ── VIEW: CHAT ── -->
-  <section id="view-chat" class="view hidden" aria-label="AI election assistant chat">
-    <div class="section-header">
-      <h2>Ask ElectIQ AI</h2>
-      <p>Powered by Google Gemini. Ask anything about elections, voting, or democracy worldwide.</p>
-    </div>
-    <div class="chat-wrap">
-      <div class="chat-window" id="chatWindow" role="log" aria-live="polite" aria-label="Chat messages" tabindex="0">
-        <div class="chat-msg assistant" role="article" aria-label="Assistant message">
-          <div class="msg-avatar" aria-hidden="true">🗳️</div>
-          <div class="msg-bubble">
-            <p>Hi! I'm <strong>ElectIQ</strong>, your global election guide. Ask me about:</p>
-            <ul>
-              <li>How elections work in any country</li>
-              <li>Voter registration processes</li>
-              <li>Electoral systems (FPTP, PR, etc.)</li>
-              <li>Election timelines and key dates</li>
-            </ul>
+    <!-- ── VIEW: EXPLORE ── -->
+    <section id="view-explore" class="view active" aria-label="Explore countries">
+      <div class="section-header">
+        <h2>Explore by Country</h2>
+        <p>Select a country to see its full election process, timeline, and voting steps.</p>
+      </div>
+
+      <div class="country-grid" role="list">
+        {% for id, country in countries.items() %}
+        <div class="country-card" style="box-shadow: 0 4px 12px rgba(0,0,0,0.1); border-radius:12px; cursor:pointer;" onclick="openCountry('{{ id }}')" role="listitem" tabindex="0" aria-label="{{ country.name }}">
+          <div class="card-flag" style="font-size: 3rem; margin-bottom: 10px; text-align:center;">{{ country.flag }}</div>
+          <div class="card-content" style="text-align:center;">
+            <h3 style="margin-bottom: 5px;">{{ country.name }}</h3>
+            <p class="system-tag" style="font-size: 0.85rem; opacity: 0.7;">{{ country.system }}</p>
           </div>
         </div>
+        {% endfor %}
       </div>
-      <div class="chat-suggestions" id="chatSuggestions" aria-label="Suggested questions">
-        <button class="suggestion-chip" onclick="sendSuggestion(this)" aria-label="Ask about India elections">How do elections work in India? 🇮🇳</button>
-        <button class="suggestion-chip" onclick="sendSuggestion(this)" aria-label="Ask about Electoral College">What is the Electoral College? 🇺🇸</button>
-        <button class="suggestion-chip" onclick="sendSuggestion(this)" aria-label="Ask about FPTP">Explain First Past the Post 🇬🇧</button>
-        <button class="suggestion-chip" onclick="sendSuggestion(this)" aria-label="Ask about EU Parliament">How does EU Parliament get elected? 🇪🇺</button>
+
+      <!-- Country Details (Hidden by default) -->
+      <article id="countryDetail" class="view-detail hidden" style="background: var(--paper-light); padding: 40px; border-radius: 20px; margin-top: 40px; border: 1px solid var(--gold-pale);">
+        <div class="detail-back" style="margin-bottom: 30px;">
+          <button onclick="closeCountry()" aria-label="Back to countries" style="color: var(--gold); font-weight: 700;">← Back to Explore</button>
+        </div>
+
+        <header class="detail-header" style="display:flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; flex-wrap: wrap; gap: 20px;">
+          <div class="detail-title-group" style="display:flex; align-items: center; gap: 20px;">
+            <div id="detailFlag" class="detail-flag" style="font-size: 4rem;"></div>
+            <h2 id="detailName" style="font-size: 3rem; font-family: var(--font-display);"></h2>
+          </div>
+          <div class="detail-meta" style="display:flex; gap: 30px; font-size: 0.9rem; border-top: 1px solid var(--gold-pale); border-bottom: 1px solid var(--gold-pale); padding: 15px 0;">
+            <div class="meta-item"><strong>System:</strong> <span id="detailSystem"></span></div>
+            <div class="meta-item"><strong>Authority:</strong> <span id="detailBody"></span></div>
+            <div class="meta-item"><strong>Cycle:</strong> <span id="detailFreq"></span></div>
+          </div>
+        </header>
+
+        <p id="detailDesc" class="detail-hero-desc" style="font-size: 1.2rem; line-height: 1.6; margin-bottom: 30px; color: var(--ink-soft);"></p>
+
+        <div id="detailFacts" class="detail-facts" role="list" style="display:flex; gap: 10px; flex-wrap: wrap; margin-bottom: 40px;"></div>
+
+        <!-- Tabs -->
+        <div class="detail-tabs" role="tablist" aria-label="Detail sections" style="display:flex; gap: 4px; background: rgba(52, 211, 153, 0.1); padding: 5px; border-radius: 10px; margin-bottom: 40px;">
+          <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-timeline" data-tab="timeline">📅 Timeline</button>
+          <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-steps" data-tab="steps">📋 How to Vote</button>
+          <button id="tabBtnStates" class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-states" data-tab="states" style="display: none;">🗺️ State Breakdown</button>
+        </div>
+
+        <!-- Timeline Tab -->
+        <div id="tab-timeline" class="tab-content active" role="tabpanel" aria-label="Election Timeline">
+          <div id="timelineContainer" class="timeline"></div>
+        </div>
+
+        <!-- Steps Tab -->
+        <div id="tab-steps" class="tab-content" role="tabpanel" aria-label="Voting steps" hidden>
+          <div id="stepsContainer" class="steps-grid"></div>
+        </div>
+
+        <!-- States Tab -->
+        <div id="tab-states" class="tab-content" role="tabpanel" aria-label="State breakdown" hidden>
+          <div id="statesContainer"></div>
+        </div>
+
+        <div class="detail-actions" style="display:flex; gap: 15px; margin-top: 40px; border-top: 1px solid var(--gold-pale); padding-top: 30px;">
+          <button class="btn-outline" onclick="openQuizForCurrent()" aria-label="Take quiz for this country" style="border: 2px solid var(--gold); color: var(--gold); padding: 12px 24px; border-radius: 10px; font-weight: 700;">🧠 Take Quiz</button>
+          <button class="btn-outline" onclick="setView('chat')" aria-label="Ask AI about this country" style="border: 2px solid var(--gold); color: var(--gold); padding: 12px 24px; border-radius: 10px; font-weight: 700;">🤖 Ask AI</button>
+        </div>
+      </article>
+    </section>
+
+    <!-- ── VIEW: COMPARE ── -->
+    <section id="view-compare" class="view" hidden aria-label="Compare voting systems">
+      <div class="section-header">
+        <h2>System Comparison</h2>
+        <p>Analyze differences in compulsory voting, frequencies, and voter populations.</p>
       </div>
-      <div class="chat-input-row" role="form" aria-label="Send a message">
-        <label for="chatInput" class="sr-only">Type your election question</label>
-        <input type="text" id="chatInput" class="chat-input"
-               placeholder="Ask about any country's election process..."
-               aria-label="Type your question about elections"
-               autocomplete="off" maxlength="500" />
-        <button class="chat-send" id="chatSend" onclick="sendChat()" aria-label="Send message">
-          <span aria-hidden="true">↑</span>
+
+      <div class="compare-charts">
+        <table class="compare-table" style="width: 100%;">
+          <thead>
+            <tr>
+              <th style="text-align: left;">Country</th>
+              <th style="text-align: left;">System</th>
+              <th style="text-align: left;">Authority</th>
+              <th style="text-align: center;">Voters</th>
+            </tr>
+          </thead>
+          <tbody id="compareBody">
+            <!-- Rendered via JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── VIEW: QUIZ ── -->
+    <section id="view-quiz" class="view" hidden aria-label="Election Quizzes">
+      <div class="section-header">
+        <h2>Test Your Knowledge</h2>
+        <p>Pick a country and see how much you know about its election process.</p>
+      </div>
+      <div id="quizCountryPicker" class="quiz-picker" role="list" aria-label="Pick a country for quiz" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px;">
+        {% for key, country in countries.items() %}
+        <button class="quiz-country-btn" role="listitem" data-country="{{ key }}"
+                aria-label="Quiz about {{ country.name }}"
+                style="padding: 20px; border: 1px solid var(--gold-pale); border-radius: 12px; background: var(--paper-light); color: var(--ink);">
+          <div style="font-size: 2rem; margin-bottom: 5px;">{{ country.flag }}</div>
+          <div>{{ country.name }}</div>
         </button>
+        {% endfor %}
       </div>
+      <div id="quizContainer" class="quiz-container hidden" aria-live="polite"></div>
+    </section>
+
+    <!-- ── VIEW: CHAT ── -->
+    <section id="view-chat" class="view hidden" aria-label="AI election assistant chat">
+      <div class="section-header">
+        <h2>Ask CivicIQ AI</h2>
+        <p>Powered by Google Gemini. Ask anything about elections, voting, or democracy worldwide.</p>
+      </div>
+      <div class="chat-wrap">
+        <div class="chat-window" id="chatWindow" role="log" aria-live="polite" aria-label="Chat messages" tabindex="0">
+          <div class="chat-msg assistant" role="article" aria-label="Assistant message">
+            <div class="msg-avatar" aria-hidden="true">🗳️</div>
+            <div class="msg-bubble">
+              <p>Hi! I'm <strong>CivicIQ</strong>, your global election guide. Ask me about:</p>
+              <ul>
+                <li>How elections work in any country</li>
+                <li>Voter registration processes</li>
+                <li>Electoral systems (FPTP, PR, etc.)</li>
+                <li>Election timelines and key dates</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="chat-suggestions" id="chatSuggestions" aria-label="Suggested questions">
+          <button class="suggestion-chip" onclick="sendSuggestion(this)" aria-label="Ask about India elections">How do elections work in India? 🇮🇳</button>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)" aria-label="Ask about Electoral College">What is the Electoral College? 🇺🇸</button>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)" aria-label="Ask about FPTP">Explain First Past the Post 🇬🇧</button>
+          <button class="suggestion-chip" onclick="sendSuggestion(this)" aria-label="Ask about EU Parliament">How does EU Parliament get elected? 🇪🇺</button>
+        </div>
+        <div class="chat-input-row" role="form" aria-label="Send a message">
+          <label for="chatInput" class="sr-only">Type your election question</label>
+          <input type="text" id="chatInput" class="chat-input"
+                 placeholder="Ask about any country's election process..."
+                 aria-label="Type your question about elections"
+                 autocomplete="off" maxlength="500" />
+          <button class="chat-send" id="chatSend" onclick="sendChat()" aria-label="Send message">
+            <span aria-hidden="true">↑</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══════ FOOTER ══════ -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span aria-hidden="true">🗳️</span> <strong>CivicIQ</strong>
+        <span class="footer-tagline">— Making democracy understandable.</span>
+      </div>
+      <div class="footer-links">
+        <span>Powered by <a href="https://ai.google.dev" rel="noopener" target="_blank" aria-label="Google Gemini AI (opens in new tab)">Google Gemini AI</a></span>
+        <span>·</span>
+        <span>Hosted on <a href="https://cloud.google.com/run" rel="noopener" target="_blank" aria-label="Google Cloud Run (opens in new tab)">Cloud Run</a></span>
+      </div>
+      <p class="footer-disclaimer">Educational content. For official election information, visit your national electoral authority.</p>
     </div>
-  </section>
+  </footer>
 
-</main>
+  <!-- Toast notifications -->
+  <div class="toast-container" id="toastContainer" aria-live="assertive" role="alert"></div>
 
-<!-- ══════ FOOTER ══════ -->
-<footer class="site-footer" role="contentinfo">
-  <div class="footer-inner">
-    <div class="footer-brand">
-      <span aria-hidden="true">🗳️</span> <strong>ElectIQ</strong>
-      <span class="footer-tagline">— Making democracy understandable.</span>
-    </div>
-    <div class="footer-links">
-      <span>Powered by <a href="https://ai.google.dev" rel="noopener" target="_blank" aria-label="Google Gemini AI (opens in new tab)">Google Gemini AI</a></span>
-      <span>·</span>
-      <span>Hosted on <a href="https://cloud.google.com/run" rel="noopener" target="_blank" aria-label="Google Cloud Run (opens in new tab)">Cloud Run</a></span>
-    </div>
-    <p class="footer-disclaimer">Educational content. For official election information, visit your national electoral authority.</p>
-  </div>
-</footer>
-
-<!-- Skip to main content (accessibility) -->
-<a href="#main-content" class="skip-link">Skip to main content</a>
-
-<!-- Toast notifications -->
-<div class="toast-container" id="toastContainer" aria-live="assertive" role="alert"></div>
-
-<script src="/static/js/timeline.js"></script>
-<script src="/static/js/chat.js"></script>
-<script src="/static/js/translate.js"></script>
-<script src="/static/js/app.js"></script>
+  <script src="/static/js/timeline.js"></script>
+  <script src="/static/js/chat.js"></script>
+  <script src="/static/js/translate.js"></script>
+  <script src="/static/js/app.js"></script>
 </body>
 </html>

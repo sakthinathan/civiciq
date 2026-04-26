@@ -1,5 +1,5 @@
 """
-ElectIQ Test Suite - Service Layer Tests
+CivicIQ Test Suite - Service Layer Tests
 Tests Gemini, Translate, Firebase, and Vertex AI services
 """
 

@@ -1,25 +1,25 @@
 /* ════════════════════════════════════════
-   ElectIQ — Global Election Education
+   CivicIQ — Global Election Education
    Design: Editorial / Magazine — deep ink
    + gold accents, Playfair Display headings
    ════════════════════════════════════════ */
 
 :root {
-  --ink: #0d0f14;
-  --ink-soft: #1c1f28;
-  --ink-muted: #2e3240;
-  --paper: #f5f0e8;
-  --paper-light: #faf8f4;
-  --gold: #c9a84c;
-  --gold-light: #e8c96a;
-  --gold-pale: #f5ecd0;
-  --red: #c0392b;
-  --teal: #1a7a6e;
+  --ink: #f0fdf4;
+  --ink-soft: #bbf7d0;
+  --ink-muted: #86efac;
+  --paper: rgba(2, 44, 34, 0.85);
+  --paper-light: rgba(6, 78, 59, 0.9);
+  --gold: #34d399;
+  --gold-light: #10b981;
+  --gold-pale: rgba(52, 211, 153, 0.15);
+  --red: #ef4444;
+  --teal: #14b8a6;
   --accent: var(--gold);
   --radius: 12px;
   --radius-sm: 6px;
-  --shadow: 0 4px 24px rgba(0,0,0,0.12);
-  --shadow-lg: 0 12px 48px rgba(0,0,0,0.18);
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.4);
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body: 'DM Sans', system-ui, sans-serif;
   --font-mono: 'DM Mono', monospace;
@@ -31,7 +31,8 @@
 html { scroll-behavior: smooth; font-size: 16px; }
 body {
   font-family: var(--font-body);
-  background: var(--paper);
+  background: linear-gradient(rgba(2, 44, 34, 0.8), rgba(2, 44, 34, 0.8)), url('/static/img/bg.png') no-repeat center center fixed;
+  background-size: cover;
   color: var(--ink);
   line-height: 1.65;
   min-height: 100vh;
@@ -63,7 +64,7 @@ button { cursor: pointer; font-family: var(--font-body); border: none; backgroun
 /* ── HEADER ── */
 .site-header {
   position: sticky; top: 0; z-index: 100;
-  background: var(--ink);
+  background: #022c22;
   border-bottom: 2px solid var(--gold);
   padding: 0 24px;
 }
@@ -76,7 +77,7 @@ button { cursor: pointer; font-family: var(--font-body); border: none; backgroun
   display: flex; align-items: center; gap: 10px;
   font-family: var(--font-display);
   font-size: 1.5rem; font-weight: 700;
-  color: var(--paper);
+  color: var(--ink);
   flex-shrink: 0;
 }
 .logo em { color: var(--gold); font-style: normal; }
@@ -111,7 +112,7 @@ button { cursor: pointer; font-family: var(--font-body); border: none; backgroun
 }
 .lang-picker {
   position: absolute; right: 0; top: calc(100% + 8px);
-  background: var(--ink); border: 1px solid var(--gold);
+  background: var(--paper); border: 1px solid var(--gold);
   border-radius: var(--radius-sm);
   display: flex; flex-direction: column; min-width: 140px;
   overflow: hidden; box-shadow: var(--shadow-lg);
@@ -129,7 +130,7 @@ button { cursor: pointer; font-family: var(--font-body); border: none; backgroun
 /* ── HERO ── */
 .hero {
   position: relative; overflow: hidden;
-  background: var(--ink);
+  background: rgba(2, 44, 34, 0.6); /* Transparent layer over bg image */
   padding: 80px 24px 100px;
   text-align: center;
 }
@@ -182,7 +183,7 @@ button { cursor: pointer; font-family: var(--font-body); border: none; backgroun
   font-family: var(--font-display);
   font-size: clamp(2.4rem, 5vw, 4rem);
   font-weight: 900; line-height: 1.1;
-  color: var(--paper);
+  color: var(--ink);
   margin-bottom: 20px;
   animation: fade-up 0.6s ease 0.1s both;
 }
@@ -363,8 +364,15 @@ button { cursor: pointer; font-family: var(--font-body); border: none; backgroun
 .tl-content:hover { box-shadow: var(--shadow); transform: translateX(4px); }
 .tl-phase {
   font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; color: var(--ink);
+  display: flex; align-items: center; justify-content: space-between;
 }
-.tl-desc { font-size: 0.88rem; color: #4b5563; line-height: 1.5; }
+.calendar-btn {
+  font-size: 0.7rem; color: var(--gold); border: 1px solid var(--gold);
+  border-radius: 4px; padding: 2px 6px; text-decoration: none;
+  background: rgba(52, 211, 153, 0.05); transition: var(--transition);
+}
+.calendar-btn:hover { background: var(--gold); color: #022c22; text-decoration: none; }
+.tl-desc { font-size: 0.88rem; color: rgba(245,240,232,0.6); line-height: 1.5; }
 
 /* ── STEPS ── */
 .steps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
@@ -512,11 +520,11 @@ button { cursor: pointer; font-family: var(--font-body); border: none; backgroun
   font-size: 0.92rem; line-height: 1.6;
 }
 .chat-msg.assistant .msg-bubble {
-  background: white; border: 1px solid #e8e4d8;
+  background: var(--paper-light); border: 1px solid var(--gold);
   border-bottom-left-radius: 4px; color: var(--ink);
 }
 .chat-msg.user .msg-bubble {
-  background: var(--ink); color: var(--paper);
+  background: var(--gold); color: #022c22;
   border-bottom-right-radius: 4px;
 }
 .msg-bubble ul { padding-left: 20px; margin-top: 8px; }
@@ -539,7 +547,7 @@ button { cursor: pointer; font-family: var(--font-body); border: none; backgroun
   display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px;
 }
 .suggestion-chip {
-  background: white; border: 1px solid #e8e4d8; border-radius: 100px;
+  background: var(--paper-light); border: 1px solid var(--gold); border-radius: 100px;
   padding: 7px 14px; font-size: 0.82rem; color: var(--ink);
   transition: var(--transition);
 }
@@ -547,7 +555,7 @@ button { cursor: pointer; font-family: var(--font-body); border: none; backgroun
 
 .chat-input-row {
   display: flex; gap: 10px; align-items: center;
-  background: white; border: 2px solid #e8e4d8;
+  background: var(--paper-light); border: 2px solid var(--gold);
   border-radius: 12px; padding: 8px 12px;
   transition: var(--transition);
 }
@@ -560,19 +568,35 @@ button { cursor: pointer; font-family: var(--font-body); border: none; backgroun
 .chat-input::placeholder { color: #9ca3af; }
 .chat-send {
   width: 40px; height: 40px; border-radius: 8px;
-  background: var(--ink); color: var(--gold);
+  background: var(--gold); color: #022c22;
   font-size: 1.2rem; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
   transition: var(--transition); flex-shrink: 0;
 }
-.chat-send:hover { background: var(--gold); color: var(--ink); }
+.chat-send:hover { background: var(--gold-light); color: #022c22; }
 .chat-send:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.tts-btn {
+  display: block; margin-top: 10px; background: transparent; border: 1px solid var(--gold);
+  color: var(--gold); border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 0.8rem;
+  transition: var(--transition);
+}
+.tts-btn:hover { background: rgba(52, 211, 153, 0.15); color: var(--ink); }
+
+.video-container {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
 
 /* ── FOOTER ── */
 .site-footer {
-  background: var(--ink); color: rgba(245,240,232,0.5);
+  background: #022c22; color: var(--ink);
   padding: 32px 24px; margin-top: 80px;
-  border-top: 2px solid rgba(201,168,76,0.2);
+  border-top: 2px solid var(--gold);
 }
 .footer-inner {
   max-width: 1200px; margin: 0 auto;
@@ -588,7 +612,7 @@ button { cursor: pointer; font-family: var(--font-body); border: none; backgroun
 /* ── TOAST ── */
 .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
 .toast {
-  background: var(--ink); color: var(--paper);
+  background: var(--paper); color: var(--ink);
   border: 1px solid var(--gold); border-radius: 8px;
   padding: 12px 18px; font-size: 0.88rem; font-weight: 500;
   box-shadow: var(--shadow-lg); min-width: 220px;

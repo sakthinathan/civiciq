@@ -98,10 +98,24 @@ def get_election_details(country_id: str) -> tuple[dict, int]:
 
     try:
         data = _load_elections_data()
-        country_data = data.get(country_id)
-
-        if not country_data:
+        
+        if country_id not in data:
             return jsonify({"error": "Country data not found"}), 404
+            
+        import copy
+        country_data = copy.deepcopy(data.get(country_id))
+
+        if country_id == "india":
+            try:
+                import os
+                import json
+                state_file_path = os.path.join(current_app.root_path, 'data', 'india_states.json')
+                if os.path.exists(state_file_path):
+                    with open(state_file_path, 'r', encoding='utf-8') as f:
+                        state_data = json.load(f)
+                        country_data['states_data'] = state_data.get('states', [])
+            except Exception as se:
+                logger.error(f"Error appending state data for India: {se}")
 
         return jsonify(country_data), 200
     except Exception as e:

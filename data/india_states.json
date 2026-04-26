@@ -1,0 +1,140 @@
+{
+  "states": [
+    {
+      "name": "Andhra Pradesh",
+      "seats": 20
+    },
+    {
+      "name": "Arunachal Pradesh",
+      "seats": 2
+    },
+    {
+      "name": "Assam",
+      "seats": 11
+    },
+    {
+      "name": "Bihar",
+      "seats": 34
+    },
+    {
+      "name": "Chhattisgarh",
+      "seats": 6
+    },
+    {
+      "name": "Goa",
+      "seats": 2
+    },
+    {
+      "name": "Gujarat",
+      "seats": 20
+    },
+    {
+      "name": "Haryana",
+      "seats": 8
+    },
+    {
+      "name": "Himachal Pradesh",
+      "seats": 3
+    },
+    {
+      "name": "Jharkhand",
+      "seats": 8
+    },
+    {
+      "name": "Karnataka",
+      "seats": 21
+    },
+    {
+      "name": "Kerala",
+      "seats": 18
+    },
+    {
+      "name": "Madhya Pradesh",
+      "seats": 19
+    },
+    {
+      "name": "Maharashtra",
+      "seats": 39
+    },
+    {
+      "name": "Manipur",
+      "seats": 1
+    },
+    {
+      "name": "Nagaland",
+      "seats": 1
+    },
+    {
+      "name": "Odisha",
+      "seats": 13
+    },
+    {
+      "name": "Punjab",
+      "seats": 9
+    },
+    {
+      "name": "Rajasthan",
+      "seats": 18
+    },
+    {
+      "name": "Sikkim",
+      "seats": 1
+    },
+    {
+      "name": "Tamil Nadu",
+      "seats": 32
+    },
+    {
+      "name": "Telangana",
+      "seats": 12
+    },
+    {
+      "name": "Tripura",
+      "seats": 1
+    },
+    {
+      "name": "Uttar Pradesh",
+      "seats": 63
+    },
+    {
+      "name": "Uttarakhand",
+      "seats": 4
+    },
+    {
+      "name": "West Bengal",
+      "seats": 30
+    },
+    {
+      "name": "Andaman and Nicobar Islands",
+      "seats": 1
+    },
+    {
+      "name": "Chandigarh",
+      "seats": 1
+    },
+    {
+      "name": "Dadra and Nagar Haveli and Daman and Diu",
+      "seats": 1
+    },
+    {
+      "name": "Jammu and Kashmir",
+      "seats": 5
+    },
+    {
+      "name": "Ladakh",
+      "seats": 1
+    },
+    {
+      "name": "Delhi",
+      "seats": 6
+    },
+    {
+      "name": "Puducherry",
+      "seats": 1
+    },
+    {
+      "name": "412",
+      "seats": 84
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 "use strict";
 
-window.electiqState = {
+window.civiciqState = {
   currentView: "explore",
   currentCountry: null,
   chatHistory: [],
@@ -44,7 +44,17 @@ function initNav() {
 }
 
 function setView(view) {
-  window.electiqState.currentView = view;
+  window.civiciqState.currentView = view;
+
+  // Toggle hero visibility so it doesn't linger on other pages
+  const hero = document.querySelector(".hero");
+  if (hero) {
+    if (view === "explore") {
+      hero.style.display = ""; // default
+    } else {
+      hero.style.display = "none";
+    }
+  }
 
   document.querySelectorAll(".view").forEach(v => {
     v.classList.toggle("active", v.id === `view-${view}`);
@@ -79,11 +89,16 @@ async function openCountry(countryId) {
     if (!res.ok) throw new Error("Country not found");
 
     const data = await res.json();
-    window.electiqState.currentCountry = countryId;
+    window.civiciqState.currentCountry = countryId;
     renderCountryDetail(data);
 
     document.querySelector(".country-grid")?.classList.add("hidden");
     document.getElementById("countryDetail")?.classList.remove("hidden");
+    
+    // Hide hero when focusing on a single country
+    const hero = document.querySelector(".hero");
+    if (hero) hero.style.display = "none";
+    
     document.getElementById("countryDetail")?.scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (err) {
     showToast("Could not load country data.");
@@ -104,22 +119,73 @@ function renderCountryDetail(data) {
   ).join("");
 
   if (window.renderTimeline) window.renderTimeline(data.timeline || []);
-  if (window.renderVotingSteps) window.renderVotingSteps(data.steps || []);
+  if (window.renderVotingSteps) window.renderVotingSteps(data.steps || [], data.youtubeId);
   if (window.initDetailTabs) window.initDetailTabs();
+
+  const tabBtnStates = document.getElementById("tabBtnStates");
+  if (data.states_data && data.states_data.length > 0) {
+    if (tabBtnStates) tabBtnStates.style.display = "inline-block";
+    renderStatesBreakdown(data.states_data);
+  } else {
+    if (tabBtnStates) tabBtnStates.style.display = "none";
+  }
+}
+
+function renderStatesBreakdown(states) {
+  const container = document.getElementById("statesContainer");
+  if (!container) return;
+  
+  const total = states.reduce((sum, s) => sum + s.seats, 0);
+  
+  let html = `<div class="info-layout" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+    <div class="info-content">
+       <div style="margin-bottom: 20px; font-size: 1.1rem; color: var(--gold); font-weight: 700;">🇮🇳 Lok Sabha Breakdown</div>
+       <p style="font-size: 0.9rem; margin-bottom: 20px; opacity: 0.8;">The Lok Sabha consists of 543 representatives elected directly by the people. Below is the seat distribution across all 36 States and Union Territories.</p>
+       <div style="font-weight: 500;">Total Constituencies: <span style="color:var(--gold); font-weight:900;">${total}</span></div>
+    </div>
+    <div class="info-map" style="border-radius: 12px; overflow: hidden; border: 1px solid var(--gold-pale);">
+       <iframe width="100%" height="200" style="border:0" loading="lazy" allowfullscreen 
+         src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBk9Wi3CDp2CQsCxtpPs7553AfEdEbykxE&q=India+Election+Commission"></iframe>
+       <div style="padding: 10px; font-size: 0.75rem; text-align: center; background: var(--paper-light);">🗺️ Dynamic Regional Context Viewer</div>
+    </div>
+  </div>`;
+
+  html += `<table class="compare-table" style="width: 100%;">
+    <thead>
+      <tr>
+        <th style="text-align: left;">State / Union Territory</th>
+        <th style="text-align: center;">Lok Sabha Seats</th>
+      </tr>
+    </thead>
+    <tbody>`;
+    
+  states.sort((a,b) => b.seats - a.seats).forEach(s => {
+    html += `<tr>
+      <td style="text-align: left;">${escapeHtml(s.name)}</td>
+      <td style="text-align: center;"><strong>${s.seats}</strong></td>
+    </tr>`;
+  });
+  
+  html += `</tbody></table>`;
+  container.innerHTML = html;
 }
 
 function closeCountry() {
-  window.electiqState.currentCountry = null;
+  window.civiciqState.currentCountry = null;
   document.getElementById("countryDetail")?.classList.add("hidden");
   document.querySelector(".country-grid")?.classList.remove("hidden");
+  
+  // Bring back hero
+  const hero = document.querySelector(".hero");
+  if (hero && window.civiciqState.currentView === "explore") hero.style.display = "";
 }
 
 async function loadAllCountries() {
   try {
     const res = await fetch("/api/elections");
-    window.electiqState.allCountries = await res.json();
+    window.civiciqState.allCountries = await res.json();
   } catch (e) {
-    window.electiqState.allCountries = {};
+    window.civiciqState.allCountries = {};
   }
 }
 
@@ -202,9 +268,33 @@ async function startQuiz(countryId) {
     if (!res.ok) throw new Error("Quiz source data unavailable");
 
     const country = await res.json();
-    const questions = buildQuizQuestions(country);
+    
+    const qc = document.getElementById("quizContainer");
+    if (qc) {
+      qc.classList.remove("hidden");
+      qc.innerHTML = `<div style="text-align:center; padding: 40px; color: var(--gold);">🤖 Generating dynamic AI quiz for ${country.name}...</div>`;
+    }
 
-    window.electiqState.quizState = {
+    let questions = [];
+    try {
+      const qRes = await fetch("/api/quiz/generate", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({country: country.name})
+      });
+      const qData = await qRes.json();
+      if (qData && qData.questions && qData.questions.length > 0) {
+        questions = qData.questions;
+      }
+    } catch(e) {
+      console.warn("AI Quiz generation failed, utilizing fallback");
+    }
+
+    if (!questions || questions.length === 0) {
+      questions = buildQuizQuestions(country);
+    }
+
+    window.civiciqState.quizState = {
       country: countryId,
       questions,
       current: 0,
@@ -212,7 +302,6 @@ async function startQuiz(countryId) {
       answered: false
     };
 
-    document.getElementById("quizContainer")?.classList.remove("hidden");
     renderQuizQuestion();
   } catch (e) {
     showToast("Could not load quiz.");
@@ -247,7 +336,7 @@ function buildQuizQuestions(countryData) {
 }
 
 function renderQuizQuestion() {
-  const { questions, current, score } = window.electiqState.quizState;
+  const { questions, current, score } = window.civiciqState.quizState;
   const qc = document.getElementById("quizContainer");
   if (!qc) return;
 
@@ -258,13 +347,13 @@ function renderQuizQuestion() {
       <div class="quiz-score" role="region" aria-label="Quiz results">
         <span class="quiz-score-num" aria-label="Score ${score} out of ${questions.length}">${score}/${questions.length}</span>
         <div class="quiz-score-label">${emoji}. You scored ${pct}%.</div>
-        <button class="quiz-restart-btn" onclick="startQuiz('${window.electiqState.quizState.country}')" aria-label="Try again">Try Again</button>
+        <button class="quiz-restart-btn" onclick="startQuiz('${window.civiciqState.quizState.country}')" aria-label="Try again">Try Again</button>
       </div>`;
     return;
   }
 
   const q = questions[current];
-  window.electiqState.quizState.answered = false;
+  window.civiciqState.quizState.answered = false;
 
   qc.innerHTML = `
     <div class="quiz-progress" aria-label="Question ${current + 1} of ${questions.length}">Question ${current + 1} of ${questions.length} · Score: ${score}</div>
@@ -281,14 +370,14 @@ function renderQuizQuestion() {
 }
 
 function answerQuiz(selectedIndex) {
-  if (window.electiqState.quizState.answered) return;
-  window.electiqState.quizState.answered = true;
+  if (window.civiciqState.quizState.answered) return;
+  window.civiciqState.quizState.answered = true;
 
-  const { questions, current } = window.electiqState.quizState;
+  const { questions, current } = window.civiciqState.quizState;
   const correct = questions[current].answer;
   const isCorrect = selectedIndex === correct;
 
-  if (isCorrect) window.electiqState.quizState.score += 1;
+  if (isCorrect) window.civiciqState.quizState.score += 1;
 
   document.querySelectorAll(".quiz-option").forEach((btn, i) => {
     btn.disabled = true;
@@ -308,14 +397,14 @@ function answerQuiz(selectedIndex) {
 }
 
 function nextQuizQuestion() {
-  window.electiqState.quizState.current += 1;
+  window.civiciqState.quizState.current += 1;
   renderQuizQuestion();
 }
 
 function openQuizForCurrent() {
-  if (window.electiqState.currentCountry) {
+  if (window.civiciqState.currentCountry) {
     setView("quiz");
-    startQuiz(window.electiqState.currentCountry);
+    startQuiz(window.civiciqState.currentCountry);
   }
 }
 

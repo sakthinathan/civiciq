@@ -1,5 +1,5 @@
 """
-ElectIQ - Global Election Education Platform
+CivicIQ - Global Election Education Platform
 Production-grade Flask application with Google AI integration
 """
 
@@ -13,6 +13,12 @@ from routes.elections import elections_bp
 from routes.chat import chat_bp
 from routes.translate import translate_bp
 from routes.health import health_bp
+from routes.tts import tts_bp
+
+try:
+    from flask_compress import Compress
+except ImportError:
+    Compress = None
 
 # ──────────────────────────────────────────────
 # LOGGING CONFIGURATION
@@ -41,6 +47,9 @@ def create_app() -> Flask:
         template_folder="templates",
         static_folder="static",
     )
+
+    if Compress:
+        Compress(app)
 
     # ── Configuration ──
     app.config["SECRET_KEY"] = config.SECRET_KEY
@@ -106,6 +115,7 @@ def create_app() -> Flask:
     app.register_blueprint(elections_bp)
     app.register_blueprint(chat_bp)
     app.register_blueprint(translate_bp)
+    app.register_blueprint(tts_bp)
 
     logger.info("Flask application created and configured")
     return app
@@ -140,10 +150,10 @@ def fallback_response(message: str) -> str:
         return "🇧🇷 Brazil has compulsory voting for ages 18–70. The President is elected via a two-round majority system. Brazil pioneered fully electronic voting in 1996 — one of the world's most advanced systems."
     elif "eu" in msg or "europe" in msg:
         return "🇪🇺 EU citizens elect 720 Members of European Parliament (MEPs) every 5 years. Each of the 27 member states uses proportional representation. The Parliament co-legislates EU law."
-    return "I'm ElectIQ, your election education guide! Ask me about voting systems, timelines, or the election process in India, USA, UK, EU, Brazil, and more. 🗳️"
+    return "I'm CivicIQ, your election education guide! Ask me about voting systems, timelines, or the election process in India, USA, UK, EU, Brazil, and more. 🗳️"
 
 
 if __name__ == "__main__":
     port = config.PORT
-    logger.info(f"Starting ElectIQ server on {config.HOST}:{port}")
+    logger.info(f"Starting CivicIQ server on {config.HOST}:{port}")
     app.run(host=config.HOST, port=port, debug=config.DEBUG)

@@ -5,7 +5,7 @@ Production-grade Flask application with Google AI integration
 
 import os
 import logging
-from flask import Flask, render_template
+from flask import Flask, render_template, send_from_directory, jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import config
@@ -108,7 +108,27 @@ def create_app() -> Flask:
                 "color": data.get("color"),
             }
 
-        return render_template("index.html", countries=countries)
+        return render_template("index.html", countries=countries, maps_api_key=config.MAPS_API_KEY)
+
+    @app.route("/robots.txt")
+    def robots():
+        """Serve robots.txt from static folder."""
+        return send_from_directory(app.static_folder, "robots.txt")
+
+    @app.route("/sitemap.xml")
+    def sitemap():
+        """Serve sitemap.xml from static folder."""
+        return send_from_directory(app.static_folder, "sitemap.xml", mimetype="application/xml")
+
+    @app.errorhandler(404)
+    def not_found(e):
+        """Handle 404 errors gracefully."""
+        return jsonify({"error": "Not found", "status": 404}), 404
+
+    @app.errorhandler(500)
+    def server_error(e):
+        """Handle 500 errors gracefully."""
+        return jsonify({"error": "Internal server error", "status": 500}), 500
 
     # Register blueprints
     app.register_blueprint(health_bp)

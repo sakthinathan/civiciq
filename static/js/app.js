@@ -145,7 +145,7 @@ function renderStatesBreakdown(states) {
     </div>
     <div class="info-map" style="border-radius: 12px; overflow: hidden; border: 1px solid var(--gold-pale);">
        <iframe width="100%" height="200" style="border:0" loading="lazy" allowfullscreen 
-         src="https://www.google.com/maps/embed/v1/place?key=AIzaSyBk9Wi3CDp2CQsCxtpPs7553AfEdEbykxE&q=India+Election+Commission"></iframe>
+         src="https://www.google.com/maps/embed/v1/place?key=${window.MAPS_API_KEY}&q=India+Election+Commission"></iframe>
        <div style="padding: 10px; font-size: 0.75rem; text-align: center; background: var(--paper-light);">🗺️ Dynamic Regional Context Viewer</div>
     </div>
   </div>`;

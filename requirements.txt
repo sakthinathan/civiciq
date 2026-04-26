@@ -16,5 +16,7 @@ pytest-mock==3.14.0
 
 # Additional utilities
 python-dotenv==1.0.0
-Flask-Compress
-gTTS
+Flask-Compress==1.14
+gTTS==2.5.1
+beautifulsoup4==4.12.3
+requests==2.31.0

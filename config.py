@@ -21,6 +21,7 @@ HOST: str = os.environ.get("HOST", "0.0.0.0")
 # ──────────────────────────────────────────────
 
 GEMINI_API_KEY: Optional[str] = os.environ.get("GEMINI_API_KEY")
+MAPS_API_KEY: Optional[str] = os.environ.get("MAPS_API_KEY", "")
 GEMINI_MODEL: str = "gemini-1.5-flash"
 
 # System prompt for Gemini AI
@@ -76,7 +77,7 @@ ALLOWED_ORIGINS: list[str] = [
     "http://localhost:8080",
     "http://localhost:5000",
     "http://127.0.0.1:8080",
-    "https://civiciq-ai.example.com"  # Update with actual Cloud Run URL
+    "https://civiciq-728645350771.us-central1.run.app",
 ]
 
 CORS_HEADERS: dict[str, str] = {
@@ -89,11 +90,12 @@ CORS_HEADERS: dict[str, str] = {
 # Content Security Policy
 CSP_HEADER: str = (
     "default-src 'self'; "
-    "script-src 'self' https://cdn.jsdelivr.net 'unsafe-inline'; "
+    "script-src 'self' https://maps.googleapis.com 'unsafe-inline'; "
     "style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; "
     "font-src 'self' https://fonts.gstatic.com; "
-    "img-src 'self' data: https:; "
-    "connect-src 'self' https://generativelanguage.googleapis.com https://translation.googleapis.com; "
+    "img-src 'self' data: https://i.ytimg.com https://maps.gstatic.com https://maps.googleapis.com https:; "
+    "connect-src 'self' https://generativelanguage.googleapis.com https://translation.googleapis.com https://maps.googleapis.com; "
+    "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://www.google.com https://maps.google.com https://maps.googleapis.com; "
     "frame-ancestors 'none';"
 )
 
